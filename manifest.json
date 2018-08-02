@@ -1,0 +1,27 @@
+{
+    "manifest_version": 2,
+    "name": "Whac-a-Mole",
+    "version": "1.0",
+    "description": "Whac-a-Mole mini-task to measure focus",
+
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_title": "Whac-a-Mole"
+    },
+
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+
+    "content_scripts": [ {
+        "matches": [ "<all_urls>" ],
+        "js": [ "whacamole.js" ],
+        "css": [ "whacamole.css" ]
+    } ],
+
+    "web_accessible_resources": [
+        "img/mole.svg",
+        "img/dirt.svg"
+    ]
+}

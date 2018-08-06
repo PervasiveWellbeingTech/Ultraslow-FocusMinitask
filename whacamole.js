@@ -7,6 +7,8 @@ window.addEventListener('load', update);
 var sheet = document.createElement('style');
 document.body.appendChild(sheet);
 
+var global_start = false;
+
 let score = 0;
 var moleOnScreen = false;
 
@@ -210,6 +212,16 @@ function clearAll() {
     moleOnScreen = false;
 }
 
+function keydownHandler(e) {
+    console.log(e)
+    // Accept enter, shift, ctrl, alt, and space
+    var acceptedKeys = [13, 16, 17, 18, 32]
+    if (acceptedKeys.includes(e.keyCode)) {
+        global_start = !global_start;
+        console.log(global_start);
+    }
+}
+
 // update all options
 function update() {
     // alert("in update");
@@ -222,9 +234,15 @@ function update() {
     }, function(items) {
         clearAll();
 
+        document.addEventListener('keydown', keydownHandler, false);
+
         if (!items.enabled) {
-            return
+            return;
         }
+
+        // while (!global_start) {
+        //     // Wait
+        // }
 
         console.log(items);
 
@@ -236,6 +254,10 @@ function update() {
         } else if (divs.length > 0 && !items.enabled) {
             var div = document.getElementById("game"); 
             div.remove();
+        }
+
+        while (!global_start) {
+            // Wait
         }
 
         var mole_time = (items.mole_time < 500) ? (items.mole_time * 1000) : items.mole_time
@@ -251,8 +273,7 @@ function update() {
 function unfocus()
 {
     var divs = document.body.querySelectorAll("#game");
-    if (divs.length > 0)
-    {
+    if (divs.length > 0) {
         var div = document.getElementById("game"); 
         div.remove();
     }

@@ -8,7 +8,7 @@ var sheet = document.createElement('style');
 document.body.appendChild(sheet);
 
 let score = 0;
-var moleOnScreen = true;
+var moleOnScreen = false;
 
 var reactionTimes = {
     click: [],
@@ -81,6 +81,8 @@ function addMole(location) {
 
         document.getElementById("hole").addEventListener("mouseover", mouseReachedMole);
         document.getElementById("hole").addEventListener("click", moleClicked);
+
+        moleOnScreen = true;
     }
 }
 
@@ -109,13 +111,19 @@ function nextMole() {
 
 function removeMole() {
     moleOnScreen = false;
-    var hole_div = document.getElementById("hole");
+    
     var mole_div = document.getElementById("mole");
-    hole_div.removeChild(mole_div);
-    hole_div.parentNode.removeChild(hole_div);
+    if (mole_div) {
+        mole_div.remove();
+    }
+
+    var hole_div = document.getElementById("hole");
+    if (hole_div) {
+        hole_div.remove();
+    }
 }
 
-function gamePlay(time) {
+function gamePlay(mole_time, interval) {
     // var i = 0;
     // setTimeout(() => {
     //     setTimeout(() => {
@@ -138,7 +146,7 @@ function gamePlay(time) {
     //     }, time);
     // }, time + 2000);
 
-    var interval = setInterval(singleCycle, time + 2000);
+    var interval = setInterval(singleCycle, mole_time + interval);
 
     function singleCycle() {
         nextMole();
@@ -148,7 +156,7 @@ function gamePlay(time) {
           if (moleOnScreen) {
             removeMole();
           }
-        }, time);
+        }, mole_time);
 
         if (score === 5) {
             clearInterval(interval);
@@ -156,15 +164,70 @@ function gamePlay(time) {
     }
 }
 
+function randomGamePlay(mole_time, interval, total_time) {
+    var timeout = setTimeout(singleCycle, mole_time + interval + getRandomeTime(-5, 5));
+
+    function singleCycle() {
+        nextMole();
+        startTime = new Date().getTime();
+
+        setTimeout(() => {
+          if (moleOnScreen) {
+            removeMole();
+          }
+        }, mole_time);
+
+        timeout = setTimeout(singleCycle, mole_time + interval + getRandomeTime(-5, 5));
+        if (score === 5) {
+            clearInterval(interval);
+        }
+    }
+}
+
+function clearAll() {
+    var mole_divs = document.body.querySelectorAll("#mole");
+    console.log(mole_divs);
+    if (moleOnScreen && mole_divs.length !== 1) {
+        console.log("Error: There should have been only 1 mole on screen, but there are " + mole_divs.length + " moles.")
+    } else if (!moleOnScreen && mole_divs.length !== 0) {
+        console.log("Error: There should have been no mole on screen, but there are " + mole_divs.length + " moles.")
+    }
+    mole_divs.forEach(
+        (mole_div) => {mole_div.remove();}
+    );
+
+    var hole_divs = document.body.querySelectorAll("#hole");
+    console.log(hole_divs);
+    if (moleOnScreen && hole_divs.length !== 1) {
+        console.log("Error: There should have been only 1 hole on screen, but there are " + hole_divs.length + " holes.")
+    } else if (!moleOnScreen && hole_divs.length !== 0) {
+        console.log("Error: There should have been no hole on screen, but there are " + hole_divs.length + " holes.")
+    }
+    hole_divs.forEach(
+        (hole_div) => {hole_div.remove();}
+    );
+
+    moleOnScreen = false;
+}
+
 // update all options
 function update() {
     // alert("in update");
     chrome.storage.sync.get({
         enabled: false,
-        color: "",
-        opacity: 1.0,
-        interval: -1
+        // color: "",
+        // opacity: 1.0,
+        interval: 30,
+        mole_time: 1.5
     }, function(items) {
+        clearAll();
+
+        if (!items.enabled) {
+            return
+        }
+
+        console.log(items);
+
         var divs = document.body.querySelectorAll("#game"); // check if there's already a box
         if (divs.length < 1 && items.enabled) {
             var div = document.createElement("div"); 
@@ -175,21 +238,12 @@ function update() {
             div.remove();
         }
 
-        // sheet.innerHTML = sheet.innerHTML +
-        //                   "#hole:after { \n" +
-        //                   "display: block; \n" +
-        //                   "background: url(" + chrome.extension.getURL('dirt.svg'); + ") bottom center no-repeat; \n" +
-        //                   "background-size: contain; \n" +
-        //                   "content: ''; \n" +
-        //                   "position: absolute; \n" +
-        //                   "z-index: 2; \n" +
-        //                   "}";
-
-        // var location = getRandomLocation();
-        // console.log(location);
-        // addMole(location);
-
-        gamePlay(2000);
+        var mole_time = (items.mole_time < 500) ? (items.mole_time * 1000) : items.mole_time
+        console.log(mole_time);
+        var interval = (items.interval < 500) ? (items.interval * 1000) : items.interval
+        console.log(interval);
+        
+        gamePlay(mole_time, interval);
     });
 }
 

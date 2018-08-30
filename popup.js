@@ -89,6 +89,28 @@ function change_interval(e)
     }
 }
 
+// update breathing interval
+function change_mole_time(e)
+{
+    var reg = /^(\d+\.?\d*|\.\d+)$/;
+    if (reg.exec(this.value)) // check for valid text input
+    {
+        var decimal_val = this.value;
+
+        // store value
+        chrome.storage.sync.set({
+            mole_time: decimal_val
+        }, function() {
+            update_status();
+        });
+
+        // update page
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {todo: "update"});
+        });
+    }
+}
+
 // function check_visibility(e)
 // {
 //     // store value
@@ -120,7 +142,8 @@ function restore_options()
         enabled: false,
         // color: "",
         // opacity: 1.0,
-        interval: 3,
+        interval: 30,
+        mole_time: 1.5
         // visibility: false
     }, function(items) {
         // update values
@@ -128,6 +151,7 @@ function restore_options()
         // document.getElementById("colorBox").value = items.color;
         // document.querySelector("input[type=range]").value = items.opacity*100;
         document.getElementById("breathingInterval").value = items.interval;
+        document.getElementById("moleDuration").value = items.mole_time;
         // document.querySelector(".visibility").checked = items.visibility;
 
         // update styles

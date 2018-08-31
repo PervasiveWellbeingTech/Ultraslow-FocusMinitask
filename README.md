@@ -23,6 +23,6 @@ Whac-a-Mole is a classic arcade game intended to test response time. The goal is
 
 <hr>
 
-#### Reference
+#### Acknowledgement
 
 Thanks to @jonathanburkle for creating a chrome extension, which can be found in #Ultraslow-ChromeExtension, and for helping with bug fixes.

@@ -20,3 +20,9 @@ Whac-a-Mole is a classic arcade game intended to test response time. The goal is
 - Set the mole time (duration for which mole stays on screen in seconds) and interval (time between two moles in seconds)
 - Toggle the "Enable" button
 - Press <kbd>Space</kbd> or <kbd>Enter</kbd> to begin
+
+<hr>
+
+#### Reference
+
+Thanks to @jonathanburkle for creating a chrome extension, which can be found in #Ultraslow-ChromeExtension, and for helping with bug fixes.
